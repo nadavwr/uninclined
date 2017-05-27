@@ -5,11 +5,13 @@ import com.github.nadavwr.math._
 import scala.annotation.tailrec
 import scala.math._
 
-class HyperbolicOrbit(override val elements: OrbitalElements)
+class HyperbolicOrbit(val elements: OrbitalElements)
   extends Orbit {
 
   import elements._
   require(e > 1)
+
+  override val tₒ: Double = elements.tₒ
 
   /** semimajor axis */
   val a: Double = -rₚ/(1-e)

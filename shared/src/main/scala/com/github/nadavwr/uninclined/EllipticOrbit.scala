@@ -9,7 +9,7 @@ import scala.math._
   * @param elements   orbital elements
   * @param tolerance  error tolerance for eccentric anomaly
   */
-class EllipticOrbit(override val elements: OrbitalElements,
+class EllipticOrbit(val elements: OrbitalElements,
                     tolerance: Double = 1e-9)
     extends Orbit {
 
@@ -17,6 +17,8 @@ class EllipticOrbit(override val elements: OrbitalElements,
   require(elements.isElliptic)
   require(e >= 0)
   require(e < 1)
+
+  override val tₒ: Double = elements.tₒ
 
   val a: Double = rₚ/(1-e)
   require(a > 0)

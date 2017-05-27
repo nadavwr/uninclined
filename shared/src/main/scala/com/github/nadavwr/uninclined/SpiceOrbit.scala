@@ -6,23 +6,29 @@ import com.github.nadavwr.cspice._
 import scala.math._
 
 object SpiceOrbit {
+
   def determineElements(state: OrbitalState): OrbitalElements = {
-    val elts = {
+    val spiceState = {
       import state._
-      val spiceState = State(r͢ₒ.x/1000, r͢ₒ.y/1000, 0, v͢ₒ.x/1000, v͢ₒ.y/1000, 0)
-      oscelt(spiceState, tₒ, μ/1e9)
+      State(r⃯.x/1000, r⃯.y/1000, 0, v⃯.x/1000, v⃯.y/1000, 0)
     }
-    import elts._
-    OrbitalElements(Mₒ = m0, rₚ = rp*1000, e = ecc, tₒ = t0, μ = mu*1e9,
-                    ϖ = argp+lnode+inc,
-                    direction = signum(lnode.toInt) /* correct? */)
+    val elts = oscelt(spiceState, state.t, state.μ/1e9)
+    val orbitalElements = {
+      import elts._
+      val direction = if (inc == 0) -1 else 1
+      OrbitalElements(Mₒ = m0, rₚ = rp * 1000, e = ecc, tₒ = t0, μ = mu * 1e9,
+                      ϖ = argp /*+ lnode + inc*/,
+                      direction = direction)
+    }
+    orbitalElements
   }
+
   def determine(state: OrbitalState): Orbit = {
     new SpiceOrbit(determineElements(state))
   }
 }
 
-class SpiceOrbit(override val elements: OrbitalElements) extends Orbit {
+class SpiceOrbit(val elements: OrbitalElements) extends Orbit {
 
   import elements._
 
@@ -30,13 +36,14 @@ class SpiceOrbit(override val elements: OrbitalElements) extends Orbit {
     Elts(
     rp = rₚ/1000,
     ecc = e,
-    inc = 0,
+    inc = if (direction == 1) π else 0,
     lnode = 0,
     argp = ϖ,
     m0 = Mₒ,
-    t0 = tₒ,
+    t0 = elements.tₒ,
     mu = μ/1e9)
 
+  override val tₒ: Double = elements.tₒ
 
   override val Tₒₚₜ: Option[Double] =
     if (e < 1) {

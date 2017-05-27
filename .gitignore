@@ -13,6 +13,8 @@ project/plugins/project/
 .cache
 .lib/
 
+*.sc
+
 /.idea/
 /project/project/
 .ensime*

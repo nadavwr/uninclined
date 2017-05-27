@@ -14,6 +14,7 @@ object Trajectory {
   class ComposedTrajectory(primary: Trajectory, secondary: Trajectory) extends Trajectory {
     override def tₒ: Double = secondary.tₒ
     override def Tₒₚₜ: Option[Double] = secondary.Tₒₚₜ
+
     override def r͢ₜ(t: Double): Vector2 = secondary.r͢ₜ(t) + primary.r͢ₜ(t)
     override def v͢ₜ(t: Double): Vector2 = secondary.v͢ₜ(t) + primary.v͢ₜ(t)
   }

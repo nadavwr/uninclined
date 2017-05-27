@@ -7,13 +7,13 @@ import scala.math._
 object OrbitalElements {
   def fromState(state: OrbitalState): OrbitalElements = {
     import state._
-    val h = r͢ₒ⨯v͢ₒ
-    val e⃯ = Vector2(v͢ₒ.y, -v͢ₒ.x) * h/μ - r͢ₒ.normalized
+    val h = r⃯⨯v⃯
+    val e⃯ = Vector2(v⃯.y, -v⃯.x) * h/μ - r⃯.normalized
     val ϖ = e⃯.θ
     val e = e⃯.r
     def isElliptic = e < 1
     def isHyperbolic = e > 1
-    val θₒ = r͢ₒ.θ - ϖ
+    val θₒ = r⃯.θ - ϖ
     val Mₒ = if (isElliptic) {
       val Eₒ = acos((e + cos(θₒ))/(1 + e*cos(θₒ)))
       Eₒ - e*sin(Eₒ)
@@ -24,10 +24,10 @@ object OrbitalElements {
       val D = tan(θₒ/2)
       D + pow(D, 3)/3
     }
-    val vₑ = sqrt(2*μ/rₒ) // will be used to detect radial trajectories
+    val vₑ = sqrt(2*μ/r) // will be used to detect radial trajectories
     val p = pow(h,2)/μ
     val rₚ = p/(1+e)
-    OrbitalElements(Mₒ = Mₒ, rₚ = rₚ, ϖ = ϖ, e = e, tₒ = tₒ, μ = μ,
+    OrbitalElements(Mₒ = Mₒ, rₚ = rₚ, ϖ = ϖ, e = e, tₒ = t, μ = μ,
                     direction = signum(h).toInt)
   }
 }

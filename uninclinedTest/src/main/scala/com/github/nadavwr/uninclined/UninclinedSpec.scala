@@ -19,6 +19,12 @@ object UninclinedSpec extends App with Spec {
       Mₒ = 0,
       tₒ = 0)
     val earthOrbit = new EllipticOrbit(earthElements)
+    val spiceOrbit = new SpiceOrbit(earthElements)
+
+    val universalOrbit = {
+      val state0 = OrbitalState(spiceOrbit.r͢ₜ(0), spiceOrbit.v͢ₜ(0), 0, earthElements.μ)
+      UniversalOrbit.determine(state0)
+    }
   }
 
   test("earth from perihelion to aphelion") runWith new EarthOrbitFixture {
@@ -29,21 +35,29 @@ object UninclinedSpec extends App with Spec {
     assertThat((rₚ ~= 1.4709e11/*m*/)(1e-4), "rₚ ~= 1.4709e11")
     assertThat((rₚ ~= r(0))(1e-9), "rₚ ~= r(0)")
     assertThat((rₚ ~= rₜ(0))(1e-9), "rₚ ~= rₜ(0)")
+    assertThat((rₚ ~= spiceOrbit.r͢ₜ(0).r)(1e-9), "rₚ ~= rₜ(0) (spice)")
+    assertThat((rₚ ~= universalOrbit.r͢ₜ(0).r)(1e-9), "rₚ ~= rₜ(0) (universal)")
     assertThat((rₚ ~= r(2*π))(1e-9), "rₚ ~= r(2π)")
     assertThat((rₚ ~= rₜ(T))(1e-5), "rₚ ~= rₜ(T)")
     assertThat((rₐ ~= 1.5210e11/*m*/)(1e-4), "rₐ ~= 1.5210e11")
     assertThat((rₐ ~= r(π))(1e-9), "rₐ ~= r(π)")
     assertThat((rₐ ~= rₜ(T/2))(1e-9), "rₐ ~= rₜ(T/2)")
+    assertThat((rₐ ~= spiceOrbit.r͢ₜ(T/2).r)(1e-9), "rₐ ~= rₜ(T/2) (spice)")
+    assertThat((rₐ ~= universalOrbit.r͢ₜ(T/2).r)(1e-9), "rₐ ~= rₜ(T/2) (universal)")
 
     val vₚ = sqrt(μ/a*(1+e)/(1-e)) // based solely on orbital elements
     val vₐ = sqrt(μ/a*(1-e)/(1+e)) // based solely on orbital elements
     assertThat((vₚ ~= 3.029e4)(1e-3), "vₚ ~= (3.029e4) √(μ/a)(1+e)/(1-e)")
     assertThat((v(0) ~= vₚ)(1e-9), "v(0) ~= vₚ")
     assertThat((vₜ(0) ~= vₚ)(1e-9), s"vₜ(0) ~= vₚ")
+    assertThat((spiceOrbit.v͢ₜ(0).r ~= vₚ)(1e-9), s"vₜ(0) ~= vₚ (spice)")
+    assertThat((universalOrbit.v͢ₜ(0).r ~= vₚ)(1e-9), s"vₜ(0) ~= vₚ (universal)")
     assertThat((v(2*π) ~= vₚ)(1e-9), "v(2π) ~= vₚ")
     assertThat((vₜ(T) ~= vₚ)(1e-5), s"vₜ(T) ~= vₚ")
     assertThat((v(π) ~= vₐ)(1e-9), "v(π) ~= vₐ")
     assertThat((vₜ(T/2) ~= vₐ)(1e-9), "vₜ(T/2) ~= vₐ")
+    assertThat((spiceOrbit.v͢ₜ(T/2).r ~= vₐ)(1e-9), "vₜ(T/2) ~= vₐ (spice)")
+    assertThat((universalOrbit.v͢ₜ(T/2).r ~= vₐ)(1e-9), "vₜ(T/2) ~= vₐ (universal)")
 
 
     println(" ͟a͟p͟h͟e͟l͟i͟o͟n͟ ")

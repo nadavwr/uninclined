@@ -28,19 +28,18 @@ object Orbit {
 
   def Δ͢͢vToCircular(state: OrbitalState): Vector2 = {
     import state._
-    val v = sqrt(μ/rₒ)
-    val ⟳ = Vector2.polar(v, r͢ₒ.θ - π/2)
-    val ⟲ = Vector2.polar(v, r͢ₒ.θ + π/2)
-    val Δ͢v = Seq(⟳, ⟲).map(v⃯ => v⃯ - v͢ₒ).minBy(Δ͢v => Δ͢v.r)
-    Δ͢v
+    val h = r⃯⨯v⃯
+    val direction = if (h <= 0) 1 else -1
+    Vector2.polar(sqrt(μ/r), r⃯.θ + π/2*direction) - v⃯
   }
 }
 
 trait Orbit extends Trajectory {
 
-  def elements: OrbitalElements
+  /** time of epoch */
+  override def tₒ: Double
 
-  override def tₒ: Double = elements.tₒ
+  /** orbital period (for closed orbits) */
   override def Tₒₚₜ: Option[Double] = None
 
   /** orbital position vector */
