@@ -21,11 +21,13 @@ def forallAlias(aliasName: String, commandName: String, projectNames: String*): 
   }.mkString)
 
 lazy val commonSettings = Def.settings(
-  scalaVersion := "2.11.8",
+  scalaVersion := Scala_2_11,
   organization := "com.github.nadavwr",
   publishArtifact in (Compile, packageDoc) := false,
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  bintrayVcsUrl := Some("git@github.com:nadavwr/uninclined.git")
+  bintrayVcsUrl := Some("git@github.com:nadavwr/uninclined.git"),
+  resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
+  resolvers += Resolver.defaultLocal
 )
 
 lazy val unpublished = Def.settings(
@@ -40,10 +42,9 @@ lazy val uninclined = crossProject(JVMPlatform, NativePlatform)
   .settings(
     commonSettings,
     moduleName := "uninclined",
-    resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
     libraryDependencies ++= Seq(
-      "com.github.nadavwr" %%% "spice-scala" % "0.1.0",
-      "com.github.nadavwr" %%% "math-utils" % "0.2.0")
+      "com.github.nadavwr" %%% "spice-scala" % "0.2.0-SNAPSHOT",
+      "com.github.nadavwr" %%% "math-utils" % "0.3.0-SNAPSHOT")
   )
 lazy val uninclinedJVM = uninclined.jvm
 lazy val uninclinedNative = uninclined.native
@@ -53,11 +54,9 @@ lazy val uninclinedTest = crossProject(JVMPlatform, NativePlatform)
   .settings(
     commonSettings,
     unpublished,
-    resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
-    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.1.3"
+    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.2.0-SNAPSHOT",
+    test := { (run in Compile).toTask("").value }
   )
-  .jvmSettings(test := { (run in Compile).toTask("").value })
-  .nativeSettings(test := run.toTask("").value)
   .dependsOn(uninclined)
 
 lazy val uninclinedTestJVM = uninclinedTest.jvm
