@@ -54,17 +54,21 @@ class HyperbolicOrbit(val elements: OrbitalElements)
     Fᴱ(Mₜ)
   }
 
-  def θ(t: Double): Double = {
+  def θₜ(t: Double): Double = {
     val k = cosh(F(t))
     acos((k+e)/(1+k*e))
   }
 
-  def r(t: Double): Double = ℓ/(1+e*cos(θ(t)))
-  override def r͢ₜ(t: Double): Vector2 = Vector2.polar(r(t), ϖ+θ(t))
-  def ϕ(t: Double): Double = {
-    val θₜ = θ(t)
-    atan(e*sin(θₜ)/(1+e*cos(θₜ)))
+  def r(θ: Double): Double = ℓ/(1+e*cos(θ))
+
+  def ϕ(θ: Double): Double = atan(e*sin(θ)/(1+e*cos(θ)))
+  def v(θ: Double): Double = sqrt(μ*(2/r(θ) - 1/a))
+
+  override protected def state(t: Double): State = {
+    lazy val θ = θₜ(t)
+    lazy val r⃯ = Vector2.polar(r(θ), ϖ+θ)
+    lazy val v⃯ = Vector2.polar(v(θ), ϖ+ϕ(θ))
+    new State(r⃯, v⃯)
   }
-  def v(t: Double): Double = sqrt(μ*(2/r(t) - 1/a))
-  override def v͢ₜ(t: Double): Vector2 = Vector2.polar(v(t), ϖ+ϕ(t))
+
 }

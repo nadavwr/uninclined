@@ -10,6 +10,5 @@ class ParabolicOrbit(elements: OrbitalElements)
 
   override val tₒ: Double = elements.tₒ
 
-  override def r͢ₜ(t: Double): Vector2 = ???
-  override def v͢ₜ(t: Double): Vector2 = ???
+  override protected def state(t: Double): State = ???
 }

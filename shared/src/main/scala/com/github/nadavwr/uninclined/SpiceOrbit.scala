@@ -1,7 +1,7 @@
 package com.github.nadavwr.uninclined
 
 import com.github.nadavwr.math._
-import com.github.nadavwr.cspice._
+import com.github.nadavwr.cspice.{State => SpiceState, _}
 
 import scala.math._
 
@@ -10,7 +10,7 @@ object SpiceOrbit {
   def determineElements(state: OrbitalState): OrbitalElements = {
     val spiceState = {
       import state._
-      State(r⃯.x/1000, r⃯.y/1000, 0, v⃯.x/1000, v⃯.y/1000, 0)
+      SpiceState(r⃯.x/1000, r⃯.y/1000, 0, v⃯.x/1000, v⃯.y/1000, 0)
     }
     val elts = oscelt(spiceState, state.t, state.μ/1e9)
     val orbitalElements = {
@@ -52,16 +52,10 @@ class SpiceOrbit(val elements: OrbitalElements) extends Orbit {
     } else None
 
 
-
-  /** orbital position vector */
-  override def r͢ₜ(t: Double): Vector2 = {
-    val state = conics(elts, t)
-    Vector2(state.px, state.py)*1000
-  }
-
-  /** orbital velocity vector */
-  override def v͢ₜ(t: Double): Vector2 = {
-    val state = conics(elts, t)
-    Vector2(state.vx, state.vy)*1000
+  override protected def state(t: Double): State = {
+    lazy val spiceState = conics(elts, t)
+    lazy val r⃯ = Vector2(spiceState.px, spiceState.py)*1000
+    lazy val v⃯ = Vector2(spiceState.vx, spiceState.vy)*1000
+    new State(r⃯, v⃯)
   }
 }

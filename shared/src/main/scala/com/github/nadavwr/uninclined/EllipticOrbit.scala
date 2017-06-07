@@ -132,9 +132,6 @@ class EllipticOrbit(val elements: OrbitalElements,
   /** orbital position at true anomaly */
   def r⃯⃯(θ: Double): Vector2 = Vector2.polar(r(θ), l(θ))
 
-  /** orbital position at time */
-  override def r͢ₜ(t: Double): Vector2 = r⃯⃯(θₜ(t))
-
   /** angle of flight path at true anomaly */
   def ɸ(θ: Double): Double = acos(h/(r(θ)*v(θ)))
 
@@ -144,6 +141,8 @@ class EllipticOrbit(val elements: OrbitalElements,
   /** orbital velocity at true anomaly */
   def v⃯(θ: Double): Vector2 = Vector2.polar(v(θ), l(θ) + ɸ(θ))
 
-  /** orbital velocity at time */
-  override def v͢ₜ(t: Double): Vector2 = v⃯(θₜ(t))
+  override protected def state(t: Double): State = {
+    lazy val θ = θₜ(t)
+    new State(r⃯⃯(θ), v⃯(θ))
+  }
 }
