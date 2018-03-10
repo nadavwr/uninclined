@@ -7,7 +7,7 @@ import scala.math._
 
 object UniversalOrbit {
 
-  val defaultTolerance: Double = 1e-6
+  val defaultTolerance: Double = 1e-9
 
 
   //noinspection TypeAnnotation

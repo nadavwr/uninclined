@@ -1,13 +1,53 @@
 package com.github.nadavwr.uninclined
 
+import java.nio.file.{Files, Paths}
+
+import scala.collection.JavaConverters._
 import com.github.nadavwr.makeshift._
 import com.github.nadavwr.math._
 
+import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.math._
+import scala.util.Try
 
 //noinspection TypeAnnotation
 object UninclinedSpec extends App with Spec {
+  case class Entry(name: String,
+                   periapsisLongitude: Double,
+                   mass: Double,
+                   reducedMass: Double,
+                   periapsisTime: Double,
+                   eccentricity: Double,
+                   periapsis: Double,
+                   centralMass: Double,
+                   radius: Double,
+                   specificOrbitalAngularMomentum: Double,
+                   orbitalAngularMomentum: Double,
+                   periapsisArgument: Double,
+                   semiminorAxis: Double,
+                   orbitPeriod: Double,
+                   hillRadius: Double,
+                   semimajorAxis: Double,
+                   averageOrbitDistance: Double,
+                   averageOrbitVelocity: Double,
+                   apoapsis: Double,
+                   rocheLimit: Double,
+                   orbitCenter: String,
+                   color: Int,
+                   symbolOpt: Option[String],
+                   soiRadius: Double
+                  )
+
+  val (mutable.Buffer(headline), lines) =
+    Files.readAllLines(Paths.get("elements.csv")).asScala.splitAt(1)
+  val headers = headline.split(',')
+  val elements: Seq[Map[String, String]] = lines.map {
+    line =>
+      val values = line.split(',')
+      headers.zip(values).toMap
+  }
+  elements.foreach(println)
 
   trait EarthOrbitFixture extends Fixture {
     val earthElements = OrbitalElements(
